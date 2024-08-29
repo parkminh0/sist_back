@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.backend.service.EmpService;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
@@ -15,6 +17,12 @@ public class EmpController {
 
     @Autowired
     EmpService empService;
+
+    @RequestMapping("/test")
+    public String requestMethodName(String param) {
+        String msg = param.concat(": Hello SIST");
+        return msg;
+    }
 
     @RequestMapping("/all")
     public Map<String, Object> all() {
