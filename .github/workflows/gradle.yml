@@ -1,5 +1,5 @@
 name: Java CI with Gradle
-	
+
 on:
   push:
     # main브랜치의 내용이 변경될 때
