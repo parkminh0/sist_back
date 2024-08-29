@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sist.backend.service.EmpService;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
