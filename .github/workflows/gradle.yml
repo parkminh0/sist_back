@@ -1,9 +1,23 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
 
 name: Java CI with Gradle
 
 on:
   push:
-    # main브랜치의 내용이 변경될 때
+    # main branch의 내용이 변경될 때
     branches: [ "main" ]
 
 jobs:
@@ -18,34 +32,37 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-	java-version: '17'
-	distribution: 'adopt'
+        java-version: '17'
+        distribution: 'adopt' 
+    
+    # https://adoptium.net/ 에서 설치한 자바이므로 distribution: 'adopt' 이렇게 입력
+
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-
+   
     - name: permission for gradlew
       run: chmod u+x gradlew
-
+   
     - name: Build with Gradle Wrapper
       run: ./gradlew clean build
 
     - name: Docker build
       run: |
-	docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-	docker build -t ${{ secrets.DOCKER_USERNAME }}/backend:0.1 .
-	docker push ${{ secrets.DOCKER_USERNAME }}/backend:0.1
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/backend:0.1 .
+        docker push ${{ secrets.DOCKER_USERNAME }}/backend:0.1
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
-	host: ${{ secrets.HOST }} # EC2 인스턴스 퍼블릭 DNS
-	username: ${{ secrets.SSH_USER }}
-	key: ${{ secrets.PRIVATE_KEY }} # pem 키
-	# 도커 작업
-	script: |
-	  docker pull ${{ secrets.DOCKER_USERNAME }}/backend:0.1
-	  docker stop $(docker ps -a -q)
-	  docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/backend:0.1
-	  docker rm $(docker ps --filter 'status=exited' -a -q)
-	  docker image prune -a -f
+        host: ${{ secrets.HOST }} # EC2 인스턴스 퍼블릭 DNS
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.PRIVATE_KEY }} # pem 키
+        # 도커 작업
+        script: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/backend:0.1
+          docker stop $(docker ps -a -q)
+          docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/backend:0.1
+          docker rm $(docker ps --filter 'status=exited' -a -q)
+          docker image prune -a -f
